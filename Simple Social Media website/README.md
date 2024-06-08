@@ -15,11 +15,11 @@ This is a simple social media application built with PHP and MySQL. It allows us
 
 1. **Using this application:**
 You can either clone this whole repository or just download this particular folder.
-- Cloning repository
+- To clone this repository, use this command:
    ```bash
    git clone https://github.com/AMinhgo/Personal-Endeavors.git
    ```
-- Download this folder: click [here](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2FAMinhgo%2FPersonal-Endeavors%2Ftree%2Fmain%2FSimple%2520Social%2520Media%2520website)
+- To download this folder, click [here](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2FAMinhgo%2FPersonal-Endeavors%2Ftree%2Fmain%2FSimple%2520Social%2520Media%2520website)
 
 >[!Note]
 >For your convenient, this guide used XAMPP to host the application, just put this folder under `xampp/htdocs`.

@@ -22,8 +22,8 @@ This is a simple social media application built with PHP and MySQL. It allows us
    Download this folder
    Click [here](https://download-directory.github.io/?url=https%3A%2F%2Fgithub.com%2FAMinhgo%2FPersonal-Endeavors%2Ftree%2Fmain%2FSimple%2520Social%2520Media%2520website)
 
-   >[!Note]
-   >For your convenient, this guide used XAMPP to host the application, just put this folder under `xampp/htdocs`.
+>[!Note]
+>For your convenient, this guide used XAMPP to host the application, just put this folder under `xampp/htdocs`.
 
 2. **Configure the database connection:**
    Change the `connection.php` to the credentials of your database connection:

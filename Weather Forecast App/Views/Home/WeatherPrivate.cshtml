@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Weather Forecast";
+}
+<h1 class="text-center my-4">Weather Forecast by City</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <input type="text" id="city" class="form-control" placeholder="Enter city name">
+                    </div>
+                    <div class="card-footer text-center">
+                        <button id="btnGetWeather" class="btn btn-primary">Get Weather</button>
+                    </div>
+                    <div id="loading" class="text-center" style="display:none;">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                    <div class="text-lg-start">
+                        <p id="name" class="h5"></p>
+                        <p id="temp"></p>
+                        <p id="feels_like"></p>
+                        <p id="humidity"></p>
+                        <p id="timezone"></p>
+                        <p id="localTime"></p>
+                    </div>
+                    <h4 class="text-center my-4">Weather forecast for the next 5 days</h4>
+                    <div id="forecast" class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Temperature (°C)</th>
+                                    <th>Feels like (°C)</th>
+                                    <th>Humidity (%)</th>
+                                    <th>Weather</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forecast-body">
+                                <!-- Forecast rows will be populated here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <button id="prevBtn" class="btn btn-secondary">Previous</button>
+                        <button id="nextBtn" class="btn btn-secondary">Next</button>
+                    </div>
+                </div>
+                <div id="error" class="alert alert-danger mt-3" role="alert" style="display:none;">
+                    Failed to fetch weather data. Please try again.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var forecastData; // Store the entire forecast data
+        var currentIndex = 0; // Index for current page of forecast data
+
+        $("#btnGetWeather").click(function () {
+            var city = $("#city").val();
+            if (!city) {
+                alert("Please enter a city name");
+                return;
+            }
+
+            $("#loading").show();
+            $("#error").hide();
+            $.get("@Url.Action("GetWeather", "Home")", { cityName: city }, function (response) {
+                $("#loading").hide();
+                $("#name").text("Current weather at " + response.name + ":");
+                $("#temp").text("Temperature: " + response.main.temp + " °C");
+                $("#feels_like").text("Feels like: " + response.main.feels_like + " °C");
+                $("#humidity").text("Humidity: " + response.main.humidity + "%");
+
+                var timezoneOffset = response.timezone / 3600;
+                var timezoneStr = "UTC" + (timezoneOffset >= 0 ? "+" : "") + timezoneOffset;
+                $("#timezone").text("Timezone: " + timezoneStr);
+
+                var localTime = new Date(new Date().getTime() + response.timezone * 1000);
+                $("#localTime").text("Local Time: " + localTime.toUTCString().slice(17, 25));
+
+            }).fail(function () {
+                $("#loading").hide();
+                $("#error").show();
+            });
+
+            // Get five days forecast
+            $.get("@Url.Action("GetForecast", "Home")", { cityName: city }, function (response) {
+                forecastData = response.list;
+                showForecastPage(currentIndex);
+            }).fail(function (xhr, status, error) {
+                console.log(xhr.responseText); // Log the error response
+                console.log(status); // Log the status
+                console.log(error); // Log the error message
+                $("#loading").hide();
+                $("#error").show();
+            });
+        });
+
+        $("#prevBtn").click(function () {
+            if (currentIndex > 0) {
+                currentIndex -= 5;
+                showForecastPage(currentIndex);
+            }
+        });
+
+        $("#nextBtn").click(function () {
+            if (currentIndex + 5 < forecastData.length) {
+                currentIndex += 5;
+                showForecastPage(currentIndex);
+            }
+        });
+
+        function showForecastPage(index) {
+            $("#forecast-body").empty(); // Clear previous forecast data
+            var endIndex = Math.min(index + 5, forecastData.length);
+
+            for (var i = index; i < endIndex; i++) {
+                var forecast = forecastData[i];
+                var date = new Date(forecast.dt_txt);
+                var dateStr = date.toLocaleDateString();
+                var timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                var temperature = forecast.main.temp;
+                var feelsLike = forecast.main.feels_like;
+                var humidity = forecast.main.humidity;
+                var weather = forecast.weather[0].description;
+                var iconCode = forecast.weather[0].icon;
+                var iconUrl = "http://openweathermap.org/img/wn/" + iconCode + ".png";
+
+                var row = "<tr>" +
+                    "<td>" + dateStr + "</td>" +
+                    "<td>" + timeStr + "</td>" +
+                    "<td>" + temperature + " °C</td>" +
+                    "<td>" + feelsLike + " °C</td>" +
+                    "<td>" + humidity + "%</td>" +
+                    "<td>" + weather + "<img src='"+ iconUrl +"'/></td>" +
+                    "</tr>";
+
+                $("#forecast-body").append(row);
+            }
+        }
+    });
+</script>

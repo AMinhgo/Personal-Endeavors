@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "qWljPS6K4JKKi3fDUxLiGRjeEobddiTM//dRKkWMbot6SgalvDOcey1ymp1wxSTMskAoeEolBq3LnCxt9gOvnA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\nhatm\\OneDrive\\To PC\\Study\\Summer2024\\SWE40006\\Task 3\\WeatherForecastApp_MVC\\WeatherForecastApp_MVC.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\nhatm\\.nuget\\packages\\jquery\\3.7.1\\jquery.3.7.1.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,7 @@
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\WeatherForecastApp_MVC.exe
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\appsettings.json
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\WeatherForecastApp_MVC.dll
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\WeatherForecastApp_MVC.deps.json
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\WeatherForecastApp_MVC.runtimeconfig.json
+C:\Users\nhatm\OneDrive\To PC\Study\Summer2024\SWE40006\Task 3\WeatherForecastApp_MVC\obj\Release\net8.0\PubTmp\Out\WeatherForecastApp_MVC.pdb

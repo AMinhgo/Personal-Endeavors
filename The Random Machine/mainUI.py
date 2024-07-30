@@ -65,8 +65,10 @@ def generate_list():
         # Display the generated list
         if len(result_list) == num_of_results:
             result_list_str = ', '.join(map(str, result_list))
-            results_label.config(text=f"Results: {result_list_str}")
-            seed_label.config(text=f"Random seed: {random_seed}")
+            results_entry.delete(0, tk.END)
+            results_entry.insert(0, result_list_str)
+            seed_entry.delete(0, tk.END)
+            seed_entry.insert(0, str(random_seed))
 
 
     except ValueError as ve:
@@ -74,6 +76,7 @@ def generate_list():
 
 # Create the main window
 root = tk.Tk()
+root.iconbitmap("Aniket-Suvarna-Box-Regular-Bx-shuffle.ico")
 root.title("Random Number Generator")
 
 # Input fields and labels
@@ -120,10 +123,14 @@ generate_button = tk.Button(root, text="Generate", command=generate_list)
 generate_button.grid(row=7, column=0, columnspan=2, pady=10)
 
 # Results display
-results_label = tk.Label(root, text="Results: ")
-results_label.grid(row=8, column=0, columnspan=2, pady=5)
 seed_label = tk.Label(root, text="Random seed: ")
-seed_label.grid(row=9, column=0, columnspan=2, pady=5)
+seed_label.grid(row=9, column=0, padx=5, pady=5)
+seed_entry = tk.Entry(root, state='normal')
+seed_entry.grid(row=9, column=1, padx=5, pady=5)
+results_label = tk.Label(root, text="Results: ")
+results_label.grid(row=8, column=0, padx=5, pady=5)
+results_entry = tk.Entry(root, state='normal')
+results_entry.grid(row=8, column=1, padx=5, pady=5)
 
 # Run the main loop
 root.mainloop()

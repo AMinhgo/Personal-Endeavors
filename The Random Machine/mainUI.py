@@ -39,10 +39,12 @@ def generate_list():
             return
         
         # Display the generated list
-        result_list_str = ', '.join(map(str, result_list))
-        results_label.config(text=f"Results: {result_list_str}")
-        seed_label.config(text=f"Random seed: {random_seed}")
-    
+        if len(result_list) == num_of_results:
+            result_list_str = ', '.join(map(str, result_list))
+            results_label.config(text=f"Results: {result_list_str}")
+            seed_label.config(text=f"Random seed: {random_seed}")
+
+
     except ValueError as ve:
         messagebox.showerror("Input Error", str(ve))
 

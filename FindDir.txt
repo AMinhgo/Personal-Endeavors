@@ -1,0 +1,45 @@
+import os
+
+# Write directory map to terminal structurely
+def list_files(startpath):
+    print("=====Start of directory=====\n```")
+    for root, dirs, files in os.walk(startpath):
+        level = root.replace(startpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        print('{}{}/'.format(indent, os.path.basename(root)))
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            print('{}{}'.format(subindent, f))
+    print("```\n=====End of directory=====")
+
+# Store directory as string in a handler
+def write_map(startpath):
+    output = []    # handler
+    output.append("=====Start of directory=====\n```")
+    for root, dirs, files in os.walk(startpath):
+        level = root.replace(startpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        output.append('{}{}/'.format(indent, os.path.basename(root)))
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            output.append('{}{}'.format(subindent, f))
+    output.append("```\n=====End of directory=====")
+    return '\n'.join(output)
+
+# Write handled string to text file
+def create_map_file(name, input_dir, output_dir):
+    # Ensure the output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    file_path = os.path.join(output_dir, name + ".txt")
+    if os.path.exists(file_path):
+        # Delete the file in order to write new data
+        os.remove(file_path)
+    with open(file_path, "w") as f:
+        filewrite = f.write(write_map(input_dir))
+    print("Directory map written to:", file_path)
+
+# list_files(".")
+# write_map(".")
+# create_map_file("map file name", "directory to map", "directory to hold map file")
+create_map_file("DirMap", ".", ".")

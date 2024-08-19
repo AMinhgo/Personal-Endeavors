@@ -1,0 +1,77 @@
+import hashlib
+import os
+import shutil
+
+# Define the folder to scan and the target folder
+source_folder = 'Untitled Folder3/'  # or the specific folder you want to scan
+target_folder = 'Test2'
+
+def collect_file_paths(folder):
+    file_paths = []
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+    return file_paths
+
+def hash_file(file_path):
+    try:
+        with open(file_path, "rb") as f:
+            file_hash = hashlib.md5()
+            chunk = f.read(8192)
+            while chunk:
+                file_hash.update(chunk)
+                chunk = f.read(8192)
+        return file_hash.hexdigest()
+    except Exception as e:
+        print(f"Error processing file {file_path}: {e}")
+        return None
+
+def find_and_copy_unique_files(source_folder, target_folder):
+    # Ensure target folder exists
+    os.makedirs(target_folder, exist_ok=True)
+    
+    # Initialize a set to track unique hash values
+    existing_hashes = set()
+
+    # Hash the files already in the target folder
+    for file_path in collect_file_paths(target_folder):
+        file_hash = hash_file(file_path)
+        if file_hash:
+            existing_hashes.add(file_hash)
+    
+    print("\n===== Copying Unique Files to Target Folder... =====")
+    
+    # Initialize counters
+    total_files_processed = 0
+    files_copied = 0
+
+    # Process files from the source folder
+    for file_path in collect_file_paths(source_folder):
+        total_files_processed += 1
+        file_hash = hash_file(file_path)
+
+        # Skip the file if its hash already exists in the target folder
+        if file_hash and file_hash not in existing_hashes:
+            file_name = os.path.basename(file_path)
+            target_file_path = os.path.join(target_folder, file_name)
+
+            # Ensure that we're not overwriting an existing file in the target folder
+            if not os.path.exists(target_file_path):
+                try:
+                    shutil.copy(file_path, target_file_path)
+                    print(f"Copied {file_path} to {target_folder}")
+                    existing_hashes.add(file_hash)  # Mark this hash as processed
+                    files_copied += 1
+                except Exception as e:
+                    print(f"Error copying file {file_path}: {e}")
+            else:
+                print(f"File {file_name} already exists in the target folder. Skipping copy.")
+        else:
+            print(f"File {file_path} is already in the target folder or failed to hash. Skipping.")
+        
+    # Print summary of the results
+    print(f"\nTotal files processed: {total_files_processed}")
+    print(f"Total files copied: {files_copied}")
+
+# Execute the function to copy unique files
+find_and_copy_unique_files(source_folder, target_folder)

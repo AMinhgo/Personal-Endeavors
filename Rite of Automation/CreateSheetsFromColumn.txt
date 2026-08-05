@@ -1,0 +1,47 @@
+Sub CreateSheetsFromRange()
+    Dim ws As Worksheet
+    Dim cell As Range
+    Dim newSheet As Worksheet
+    Dim sheetName As String
+
+    ' Set the current worksheet
+    Set ws = ThisWorkbook.Sheets("Summary") ' Adjust if needed
+
+    ' Loop through the range A1:A100
+    For Each cell In ws.Range("A1:A100")
+        If Not IsEmpty(cell.Value) Then
+            sheetName = CStr(cell.Value)
+
+            ' Check if sheet already exists
+            On Error Resume Next
+            Set newSheet = ThisWorkbook.Sheets(sheetName)
+            On Error GoTo 0
+
+            ' If the sheet does not exist, create it
+            If newSheet Is Nothing Then
+                Set newSheet = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+                newSheet.Name = sheetName
+
+                ' Set the sheet tab color to light yellow
+                newSheet.Tab.Color = RGB(255, 242, 204)
+
+                ' === Formatting additions ===
+
+                ' Set font to Arial, size 10 for the entire sheet
+                With newSheet.Cells.Font
+                    .Name = "Arial"
+                    .Size = 10
+                End With
+
+                ' Turn off gridlines (gridlines are window-level, so sheet must be active)
+                newSheet.Activate
+                ActiveWindow.DisplayGridlines = False
+            End If
+
+            ' Reset for the next iteration
+            Set newSheet = Nothing
+        End If
+    Next cell
+
+    MsgBox "Sheets created.", vbInformation
+End Sub

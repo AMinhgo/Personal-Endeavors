@@ -1,0 +1,19 @@
+Name
+LC-013239 - Access to AIA system is authenticated and authorized
+LC-013236 - Passwords are managed per User Identify and Access Standard
+LC-013261 - Change passwords of User IDs every 90 days
+LC-013262 - Emergency ID password is managed by password management tool
+LC-013235 - ID and access requests are documented and approved
+LC-013243 - Access to PID is granted on as-needed basis
+LC-013263 - System access is granted per least privilege principle
+LC-013258 - Terminated user IDs are removed from system within 7 days
+LC-013244 - Conduct user recertification process on annual basis
+LC-013251 - All IDs and access rights must be recertified every 12 month
+LC-013252 - Audit log for all privilege IDs
+LC-013254 - Use of PIDs is reviewed by manager within 30 days
+LC-013240 - Document and approve change request-Archer
+LC-013237 - Review and approve change request test plans
+LC-013260 - Securely configure platforms to hardening standards
+LC-013246 - IT incidents are escalated per IT incident policy
+LC-013249 - Log and monitor scheduled jobs and batch processes
+LC-013255 - Define and document data backup operating procedures

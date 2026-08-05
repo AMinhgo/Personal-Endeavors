@@ -1,0 +1,76 @@
+Sub CopyGroupedImages_ToExistingSheetsOnly()
+    Dim srcSheet As Worksheet
+    Dim ctrlSheet As Worksheet
+    Dim tgtSheet As Worksheet
+    Dim cell As Range
+    Dim shp As Shape
+    Dim grp As Shape
+    Dim shapeNames() As String
+    Dim i As Long
+    Dim missingSheets As String
+
+    ' Sheets
+    Set srcSheet = ThisWorkbook.Sheets("20251130")   ' images live here
+    Set ctrlSheet = ThisWorkbook.Sheets("4.1 CO-2")   ' summary sheet
+
+    ' =========================
+    ' Group all shapes ONCE
+    ' =========================
+    If srcSheet.Shapes.Count = 0 Then
+        MsgBox "No shapes found on Template sheet.", vbExclamation
+        Exit Sub
+    End If
+
+    ReDim shapeNames(1 To srcSheet.Shapes.Count)
+
+    i = 1
+    For Each shp In srcSheet.Shapes
+        shapeNames(i) = shp.Name
+        i = i + 1
+    Next shp
+
+    Set grp = srcSheet.Shapes.Range(shapeNames).Group
+
+    ' =========================
+    ' Loop through output list
+    ' =========================
+    For Each cell In ctrlSheet.Range("H100:H113")
+        If Trim(cell.Value) <> "" Then
+
+            ' Try to get existing sheet
+            On Error Resume Next
+            Set tgtSheet = ThisWorkbook.Sheets(cell.Value)
+            On Error GoTo 0
+
+            If tgtSheet Is Nothing Then
+                ' Sheet missing ? record name
+                missingSheets = missingSheets & cell.Value & vbCrLf
+            Else
+                ' Copy group and paste
+                grp.Copy
+                tgtSheet.Paste
+
+                ' Position at B6 and ungroup
+                With tgtSheet.Shapes(tgtSheet.Shapes.Count)
+                    .Left = tgtSheet.Range("B5").Left
+                    .Top = tgtSheet.Range("B5").Top
+                    .Ungroup
+                End With
+            End If
+
+            Set tgtSheet = Nothing
+        End If
+    Next cell
+
+    ' =========================
+    ' Notify about missing sheets
+    ' =========================
+    If missingSheets <> "" Then
+        MsgBox "The following sheets were NOT found and were skipped:" & vbCrLf & vbCrLf & _
+               missingSheets, vbExclamation, "Missing Sheets"
+    Else
+        MsgBox "Images copied successfully to all listed sheets.", vbInformation
+    End If
+End Sub
+
+

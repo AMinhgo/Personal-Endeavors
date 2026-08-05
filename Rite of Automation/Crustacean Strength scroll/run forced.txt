@@ -1,0 +1,4 @@
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+.\Script.ps1 -param .\Destination

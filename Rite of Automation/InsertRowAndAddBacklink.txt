@@ -1,0 +1,51 @@
+Sub InsertRowAndAddBacklink()
+    Dim sourceSheet As Worksheet
+    Dim targetSheet As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim baseSheetName As String
+    Dim targetSheetName As String
+    Dim linkText As String
+    Dim backLinkCell As Range
+    
+    ' Set the source sheet
+    Set sourceSheet = ThisWorkbook.Sheets("1.2 APD-3") ' Replace with your source sheet name
+    Set rng = sourceSheet.Range("B177:B183" & sourceSheet.Cells(sourceSheet.Rows.Count, "B").End(xlUp).Row) ' Assumes data starts at A2
+    
+    ' Loop through the reference values in the source sheet
+    For Each cell In rng
+        If cell.Value <> "" Then
+            ' Construct the full sheet name
+            'baseSheetName = "Sheet1_" ' Replace with your base name if applicable
+            targetSheetName = cell.Value
+            
+            ' Check if the target sheet exists
+            On Error Resume Next
+            Set targetSheet = ThisWorkbook.Sheets(targetSheetName)
+            On Error GoTo 0
+            
+            If Not targetSheet Is Nothing Then
+                ' Insert a row at the top of the target sheet
+                targetSheet.Rows(1).Insert
+                
+                ' Add a hyperlink in the first cell of the new row
+                Set backLinkCell = targetSheet.Cells(1, 1)
+                linkText = "Back to " & sourceSheet.Name
+                
+                targetSheet.Hyperlinks.Add _
+                    Anchor:=backLinkCell, _
+                    Address:="", _
+                    SubAddress:="'" & sourceSheet.Name & "'!" & cell.Address, _
+                    TextToDisplay:=linkText
+            Else
+                ' Optional: Handle missing sheets (e.g., log or display a message)
+                Debug.Print "Sheet not found: " & targetSheetName
+            End If
+            
+            ' Clear the object reference
+            Set targetSheet = Nothing
+        End If
+    Next cell
+End Sub
+
+

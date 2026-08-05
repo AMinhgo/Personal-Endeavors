@@ -1,0 +1,1 @@
+powershell -Command "Get-ChildItem -Path . -Recurse -Filter *.zip | ForEach-Object { Expand-Archive -Path $_.FullName -DestinationPath ($_.FullName -replace '.zip$','') }" 

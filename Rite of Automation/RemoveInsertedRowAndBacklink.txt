@@ -1,0 +1,42 @@
+Sub RemoveInsertedRowAndBacklink()
+    Dim sourceSheet As Worksheet
+    Dim targetSheet As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim baseSheetName As String
+    Dim targetSheetName As String
+    Dim firstCell As Range
+    
+    ' Set the source sheet
+    Set sourceSheet = ThisWorkbook.Sheets("YourSourceSheetName") ' Replace with your source sheet name
+    Set rng = sourceSheet.Range("A2:A" & sourceSheet.Cells(sourceSheet.Rows.Count, "A").End(xlUp).Row) ' Assumes data starts at A2
+    
+    ' Loop through the reference values in the source sheet
+    For Each cell In rng
+        If cell.Value <> "" Then
+            ' Construct the full sheet name
+            baseSheetName = "Sheet1_" ' Replace with your base name if applicable
+            targetSheetName = baseSheetName & cell.Value
+            
+            ' Check if the target sheet exists
+            On Error Resume Next
+            Set targetSheet = ThisWorkbook.Sheets(targetSheetName)
+            On Error GoTo 0
+            
+            If Not targetSheet Is Nothing Then
+                ' Check if the first row contains a hyperlink
+                Set firstCell = targetSheet.Cells(1, 1)
+                If firstCell.Hyperlinks.Count > 0 Then
+                    ' Verify if the hyperlink points back to the source sheet
+                    If InStr(firstCell.Hyperlinks(1).SubAddress, sourceSheet.Name) > 0 Then
+                        ' Delete the first row
+                        targetSheet.Rows(1).Delete
+                    End If
+                End If
+            End If
+            
+            ' Clear the object reference
+            Set targetSheet = Nothing
+        End If
+    Next cell
+End Sub

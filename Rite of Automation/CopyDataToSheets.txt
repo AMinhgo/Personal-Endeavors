@@ -1,0 +1,37 @@
+Sub CopyDataToSheets()
+    Dim wsNaming As Worksheet, wsData As Worksheet
+    Dim cell As Range, sheetName As String
+    Dim lastRow As Long
+    
+    ' Set references to the sheets
+    Set wsNaming = ThisWorkbook.Sheets("Naming")
+    Set wsData = ThisWorkbook.Sheets("Data")
+    
+    ' Find last row in Data sheet (assuming data is continuous in column A)
+    lastRow = wsData.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    ' Loop through the sheet names in Naming sheet (D12:D42)
+    For Each cell In wsNaming.Range("D12:D42")
+        sheetName = cell.Value
+        
+        ' Check if sheet exists
+        If SheetExists(sheetName) Then
+            ' Copy and paste data to the corresponding sheet
+            wsData.Rows("3:100").Copy
+            ThisWorkbook.Sheets(sheetName).Range("A3").PasteSpecial Paste:=xlPasteAll
+        End If
+    Next cell
+    
+    ' Clean up
+    Application.CutCopyMode = False
+    MsgBox "Data copied successfully!", vbInformation
+End Sub
+
+' Function to check if a sheet exists
+Function SheetExists(sheetName As String) As Boolean
+    Dim ws As Worksheet
+    On Error Resume Next
+    Set ws = ThisWorkbook.Sheets(sheetName)
+    On Error GoTo 0
+    SheetExists = Not ws Is Nothing
+End Function

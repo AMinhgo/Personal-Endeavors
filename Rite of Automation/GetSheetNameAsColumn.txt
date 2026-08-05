@@ -1,0 +1,22 @@
+Sub GetSheetNameAsColumn()
+    Dim ws As Worksheet
+    Dim activeWs As Worksheet
+    Dim row As Long
+    
+    ' Reference to the active worksheet
+    Set activeWs = ActiveSheet
+    
+    ' Clear column A first
+    activeWs.Columns("A").ClearContents
+    
+    ' Start writing from row 1
+    row = 1
+    
+    ' Loop through all worksheets in the workbook
+    For Each ws In ThisWorkbook.Sheets
+        activeWs.Cells(row, 1).Value = ws.Name
+        row = row + 1
+    Next ws
+    
+    MsgBox "All sheet names have been added to column A of the active sheet.", vbInformation
+End Sub

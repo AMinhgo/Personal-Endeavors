@@ -1,0 +1,50 @@
+Sub CreateDynamicHyperlinks()
+    Dim ws As Worksheet
+    Dim sourceSheet As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim baseSheetName As String
+    Dim targetSheetName As String
+    Dim targetCell As String
+    Dim linkText As String
+    
+    ' Set the sheet with the column to work on
+    Set sourceSheet = ThisWorkbook.Sheets("1.2 APD-3") ' Replace with your source sheet name
+    Set rng = sourceSheet.Range("O177:O183" & sourceSheet.Cells(sourceSheet.Rows.Count, "O").End(xlUp).Row) ' Assumes data starts at A2
+    
+    ' Set the base part of the sheet name (if applicable)
+    'baseSheetName = "Sheet1_" ' Replace with your base name
+
+    ' Loop through the column values
+    For Each cell In rng
+        If cell.Value <> "" Then
+            ' Construct the full sheet name
+            targetSheetName = baseSheetName & cell.Value
+            
+            ' Check if the target sheet exists
+            On Error Resume Next
+            Set ws = ThisWorkbook.Sheets(targetSheetName)
+            On Error GoTo 0
+            
+            If Not ws Is Nothing Then
+                ' Create a hyperlink in the adjacent column (e.g., Column B)
+                targetCell = "A1" ' Change to the cell you want to link to in the target sheet
+                linkText = targetSheetName
+                
+                sourceSheet.Hyperlinks.Add _
+                    Anchor:=cell.Offset(0, 0), _
+                    Address:="", _
+                    SubAddress:="'" & targetSheetName & "'!" & targetCell, _
+                    TextToDisplay:=linkText
+            Else
+                ' Optional: Indicate missing sheet
+                cell.Offset(0, 1).Value = "Sheet not found"
+            End If
+            
+            ' Clear the object reference
+            Set ws = Nothing
+        End If
+    Next cell
+End Sub
+
+

@@ -1,0 +1,110 @@
+Option Explicit
+
+' ===== Helper: URL-encode using Excel 2013+ (preferred) or a fallback =====
+Private Function UrlEncodeUtf8(ByVal s As String) As String
+    On Error Resume Next
+    UrlEncodeUtf8 = Application.WorksheetFunction.EncodeURL(s)  ' Excel 2013+
+    If Err.Number <> 0 Then
+        Err.Clear
+        ' Fallback: simple encoder (ASCII-safe). For full UTF-8 support, consider VBA-JSON or ADODB.Stream.
+        UrlEncodeUtf8 = Replace(s, "%", "%25")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, " ", "%20")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, "&", "%26")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, "?", "%3F")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, "=", "%3D")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, "#", "%23")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, Chr(34), "%22")
+        UrlEncodeUtf8 = Replace(UrlEncodeUtf8, "+", "%2B")
+        ' (This fallback does not fully cover Unicode; prefer EncodeURL when available.)  ' [1](https://learn.microsoft.com/en-us/office/vba/api/excel.worksheetfunction.encodeurl)
+    End If
+    On Error GoTo 0
+End Function
+
+' ===== Helper: extract "translatedText":"...value..." with JSON-escaped content =====
+Private Function ExtractTranslatedText(ByVal json As String) As String
+    ' Regex pattern captures the first translatedText value and allows for escaped quotes
+    Dim re As Object, m As Object
+    Set re = CreateObject("VBScript.RegExp")
+    re.Pattern = """translatedText""\s*:\s*""((?:[^""\\]|\\.)*)"""
+    re.Global = False
+    re.MultiLine = True
+    re.IgnoreCase = True
+
+    If re.Test(json) Then
+        Set m = re.Execute(json)(0)
+        ExtractTranslatedText = JsonUnescape(m.SubMatches(0))
+    Else
+        ExtractTranslatedText = ""
+    End If
+End Function
+
+' ===== Helper: unescape common JSON string escapes =====
+Private Function JsonUnescape(ByVal s As String) As String
+    s = Replace(s, "\" & """", """")   ' \" -> "
+    s = Replace(s, "\\", "\")          ' \\ -> \
+    s = Replace(s, "\/", "/")          ' \/ -> /
+    s = Replace(s, "\b", vbBack)       ' \b
+    s = Replace(s, "\f", vbFormFeed)   ' \f
+    s = Replace(s, "\n", vbLf)         ' \n
+    s = Replace(s, "\r", vbCr)         ' \r
+    s = Replace(s, "\t", vbTab)        ' \t
+
+    ' Decode \uXXXX (basic BMP only)
+    Dim re As Object, m As Object
+    Set re = CreateObject("VBScript.RegExp")
+    re.Pattern = "\\u([0-9a-fA-F]{4})"
+    re.Global = True
+
+    Do While re.Test(s)
+        Set m = re.Execute(s)(0)
+        Dim code As Integer
+        code = CInt("&H" & m.SubMatches(0))
+        s = Left$(s, m.FirstIndex) & ChrW$(code) & Mid$(s, m.FirstIndex + m.Length + 1)
+    Loop
+
+    JsonUnescape = s
+End Function
+
+
+Public Function GoogleTranslate( _
+    ByVal text As String, _
+    ByVal target_language As String, _
+    Optional ByVal source_language As String = "" _
+) As String
+
+    Dim apiKey As String
+    apiKey = "YOUR_API_KEY"   ' <-- put your real key here
+
+    ' Build URL (encode only the q parameter)
+    Dim baseUrl As String, url As String, q As String
+    baseUrl = "https://translation.googleapis.com/language/translate/v2"  ' v2 endpoint [3](https://cloud.google.com/translate/docs/reference/rest/v2/translate)
+    q = UrlEncodeUtf8(text)
+
+    url = baseUrl & "?key=" & apiKey & _
+          "&q=" & q & _
+          IIf(Len(source_language) > 0, "&source=" & source_language, "") & _
+          "&target=" & target_language & _
+          "&format=text"  ' treat input as plain text [3](https://cloud.google.com/translate/docs/reference/rest/v2/translate)
+
+    ' Make HTTP request
+    Dim http As Object
+    Set http = CreateObject("MSXML2.XMLHTTP")  ' or MSXML2.ServerXMLHTTP for server contexts
+    http.Open "GET", url, False
+    http.send
+
+    If http.Status <> 200 Then
+        GoogleTranslate = "HTTP " & http.Status & " - " & http.statusText & " : " & http.responseText
+        Exit Function
+    End If
+
+    ' Parse JSON for translatedText
+    Dim translated As String
+    translated = ExtractTranslatedText(http.responseText)
+    If Len(translated) = 0 Then
+        GoogleTranslate = "Translation failed: could not find translatedText in response."
+    Else
+        GoogleTranslate = translated
+    End If
+End Function
+
+

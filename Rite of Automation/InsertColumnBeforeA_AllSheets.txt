@@ -1,0 +1,19 @@
+Sub InsertColumnBeforeA_AllSheets()
+    Dim ws As Worksheet
+    Dim columnWidth As Double
+
+    ' Set column width for approximately 35 pixels
+    columnWidth = 4.29
+
+    ' Loop through all worksheets in the workbook
+    For Each ws In ThisWorkbook.Worksheets
+        ' Insert a new column before column A
+        ws.Columns("A").Insert
+
+        ' Set the width of the new column
+        ws.Columns("A").ColumnWidth = columnWidth
+    Next ws
+
+    ' Notify the user
+    MsgBox "Column inserted before A with a width of approximately 35 pixels for all worksheets.", vbInformation
+End Sub

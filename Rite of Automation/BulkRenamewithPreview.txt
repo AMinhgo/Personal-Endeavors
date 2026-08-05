@@ -1,0 +1,36 @@
+# Collect files and preview new names
+$filesToRename = Get-ChildItem -File | ForEach-Object {
+    $originalName = $_.Name
+    $cleanName = $originalName -replace '\[VTI_Turbo Project\]\s*', '' -replace '-Meeting Recording\s*', ''
+    $cleanName = $cleanName.Trim()
+
+    if ($originalName -ne $cleanName) {
+        [PSCustomObject]@{
+            Original = $originalName
+            NewName  = $cleanName
+            FullPath = $_.FullName
+        }
+    }
+}
+
+if ($filesToRename) {
+    Write-Host "The following files will be renamed:" -ForegroundColor Cyan
+    $filesToRename | ForEach-Object {
+        Write-Host "'$($_.Original)' → '$($_.NewName)'" -ForegroundColor Yellow
+    }
+
+    # Prompt user for confirmation
+    $choice = Read-Host "Proceed with renaming? (Y/N)"
+    if ($choice -match '^[Yy]$') {
+        foreach ($file in $filesToRename) {
+            Rename-Item -LiteralPath $file.FullPath -NewName $file.NewName
+            Write-Host "Renamed: '$($file.Original)' → '$($file.NewName)'" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host "Renaming cancelled." -ForegroundColor Red
+    }
+}
+else {
+    Write-Host "No files require renaming." -ForegroundColor Gray
+}

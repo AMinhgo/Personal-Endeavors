@@ -1,0 +1,55 @@
+Sub LinkMatchingIDs()
+    Dim wsA As Worksheet, wsB As Worksheet
+    Dim rngA As Range, rngB As Range
+    Dim cellA As Range, cellB As Range
+    Dim foundCell As Range
+    
+    ' Set worksheet references
+    Set wsA = ThisWorkbook.Sheets("SheetA")
+    Set wsB = ThisWorkbook.Sheets("SheetB")
+    
+    ' Set ID ranges
+    Set rngA = wsA.Range("B17:B158")
+    Set rngB = wsB.Range("A3:A144")
+    
+    ' Clear previous hyperlinks
+    rngA.Hyperlinks.Delete
+    rngB.Hyperlinks.Delete
+    
+    ' Create hyperlinks in SheetA to match in SheetB
+    For Each cellA In rngA
+        If Not IsEmpty(cellA.Value) Then
+            Set foundCell = rngB.Find(What:=cellA.Value, LookAt:=xlWhole)
+            If Not foundCell Is Nothing Then
+                cellA.Hyperlinks.Add _
+                    Anchor:=cellA, _
+                    Address:="", _
+                    SubAddress:="'" & wsB.Name & "'!" & foundCell.Address, _
+                    TextToDisplay:=cellA.Value
+            End If
+        End If
+    Next cellA
+    
+    ' Create hyperlinks in SheetB to match in SheetA
+    For Each cellB In rngB
+        If Not IsEmpty(cellB.Value) Then
+            Set foundCell = rngA.Find(What:=cellB.Value, LookAt:=xlWhole)
+            If Not foundCell Is Nothing Then
+                cellB.Hyperlinks.Add _
+                    Anchor:=cellB, _
+                    Address:="", _
+                    SubAddress:="'" & wsA.Name & "'!" & foundCell.Address, _
+                    TextToDisplay:=cellB.Value
+            End If
+        End If
+    Next cellB
+    
+    ' Cleanup
+    Set wsA = Nothing
+    Set wsB = Nothing
+    Set rngA = Nothing
+    Set rngB = Nothing
+    Set foundCell = Nothing
+    
+    MsgBox "Hyperlinks added successfully!", vbInformation
+End Sub

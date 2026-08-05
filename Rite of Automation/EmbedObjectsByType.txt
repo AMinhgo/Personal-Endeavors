@@ -1,0 +1,40 @@
+Option Explicit
+
+Sub EmbedObjectsByType()
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim filePath As String
+    Dim fileType As String
+    Dim objLeft As Double
+    Dim objTop As Double
+
+    '=== CONFIGURATION ===
+    Set ws = ActiveSheet
+    Set rng = ws.Range("S8:S22")
+    fileType = "*.pdf"   ' Change this to "*.xlsx", "*.docx", etc.
+
+    '=== LOOP THROUGH RANGE ===
+    For Each cell In rng
+        filePath = Trim$(CStr(cell.Value))
+
+        ' Check if file path matches desired type and exists
+        If filePath <> "" _
+           And LCase$(filePath) Like LCase$(fileType) _
+           And Dir$(filePath) <> "" Then
+
+            objLeft = cell.Offset(0, 1).Left
+            objTop = cell.Offset(0, 1).Top
+
+            ws.OLEObjects.Add _
+                Filename:=filePath, _
+                Link:=False, _
+                DisplayAsIcon:=True, _
+                IconFileName:="C:\Windows\System32\packager.dll", _
+                IconIndex:=0, _
+                IconLabel:=Dir$(filePath), _
+                Left:=objLeft, _
+                Top:=objTop
+        End If
+    Next cell
+End Sub

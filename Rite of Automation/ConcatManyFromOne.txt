@@ -1,0 +1,1 @@
+=IFERROR(TEXTJOIN(", ",TRUE,FILTER('Retail & Coffeeshop Risks'!E$2:E$83,'Retail & Coffeeshop Risks'!C$2:C$83=[@[CIS Safeguard No.]])),"No match")

@@ -1,0 +1,27 @@
+Sub CopyFormulaToSheets()
+    Dim wsNaming As Worksheet, wsData As Worksheet
+    Dim cell As Range, sheetName As String
+    
+    ' Set references to the sheets
+    Set wsNaming = ThisWorkbook.Sheets("Control summary")
+    Set wsData = ThisWorkbook.Sheets("1.1 APD-1")
+    
+    ' Loop through the sheet names in Naming sheet (B4:B20)
+    For Each cell In wsNaming.Range("B4:B20")
+        sheetName = cell.Value
+        
+        ' Check if sheet exists
+        If SheetExists(sheetName) Then
+            ' Copy formula from A2 to H2 of the target sheet
+            ThisWorkbook.Sheets(sheetName).Range("H2").Formula = wsData.Range("A2").Formula
+        End If
+    Next cell
+    
+    MsgBox "Formula copied successfully!", vbInformation
+End Sub
+
+Function SheetExists(sheetName As String) As Boolean
+    On Error Resume Next
+    SheetExists = Not ThisWorkbook.Sheets(sheetName) Is Nothing
+    On Error GoTo 0
+End Function
